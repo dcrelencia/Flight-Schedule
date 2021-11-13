@@ -1,2 +1,2 @@
 # Flight-Schedule
-Outbound mainland flight schedule from HNL airport.
+Outbound mainland flight schedules from HNL airport.
