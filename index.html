@@ -4,9 +4,7 @@
 <h2>Daily Flight Schedule</h2>
 <marquee behavior="scroll" bgcolor="white" loop="-1" width="30%"><i><font color="green"><strong>Today is <span id="time"></span></strong> </font></i></marquee>
 <br>
-<style>
-    table { font-family: 'Times New Roman', Times, serif; }
-</style>
+<style> table { font-family: 'Times New Roman', Times, serif; }</style>
 <script>
 //https://stackoverflow.com/questions/61328891/how-to-take-a-tsv-file-and-convert-to-json-in-js
 const tsv2arr = (tsv) => {
@@ -392,23 +390,20 @@ for(var i = 0; i < tsv2arr(tsv).length; i++){
             if(counter === 0){ //Hawaiian airlines
                 document.write(
                     "<b>Flight schedule for today, </b>", daysOfTheWeek[day], "<br>",
+                    "<br>", "Hawaiian Airlines: Work in progress", "<br>",
                     "<br>", "Alaska Airlines:", "<br>"
                     );
                 counter++;
-            }
-            else if (counter === 1 && tsv2arr(tsv)[i].AIRLINES === "WN"){
+            }else if (counter === 1 && tsv2arr(tsv)[i].AIRLINES === "WN"){
                 document.write("<br>", "Southwest Airlines:", "<br>");
                 counter++;
-            }
-            else if (counter === 2 && tsv2arr(tsv)[i].AIRLINES === "DL"){
+            }else if (counter === 2 && tsv2arr(tsv)[i].AIRLINES === "DL"){
                 document.write("<br>", "Delta Airlines:", "<br>");
                 counter++;
-            }
-            else if (counter === 3 && tsv2arr(tsv)[i].AIRLINES === "AA"){
+            }else if (counter === 3 && tsv2arr(tsv)[i].AIRLINES === "AA"){
                 document.write("<br>", "American Airlines:", "<br>");
                 counter++;
-            }
-            else if (counter === 4 && tsv2arr(tsv)[i].AIRLINES === "UA"){
+            }else if (counter === 4 && tsv2arr(tsv)[i].AIRLINES === "UA"){
                 document.write("<br>", "United Airlines:", "<br>");
                 counter++;
             }
@@ -429,6 +424,7 @@ while(j < 7){ //for days
     j++;
     //console.log(j, day + j);
     if(daysOfTheWeek.indexOf(daysOfTheWeek[day + j]) === -1){ //if array is out of bound, subtract 7 to get to the appropriate index and print its element.
+        counter -= counter;
         if(j === 1){
             document.write("<br>", "<b>Flight schedule for tomorrow, </b>", daysOfTheWeek[(day + j) - 7], "<br>");
         }
@@ -440,6 +436,25 @@ while(j < 7){ //for days
         for(var i = 0; i< tsv2arr(tsv).length; i++){
             if(effectiveDate <= new Date(tsv2arr(tsv)[i].ENDDATE) && effectiveDate >= new Date(tsv2arr(tsv)[i].STARTDATE)){
                 if(tsv2arr(tsv)[i].FREQUENCY === daysOfTheWeek[(day + j) - 7] || tsv2arr(tsv)[i].FREQUENCY === "DAILY"){
+                    if(counter === 0){ //Hawaiian airlines
+                        document.write(
+                        "<br>", "Hawaiian Airlines: Work in progress", "<br>",
+                        "<br>", "Alaska Airlines:", "<br>"
+                    );
+                        counter++;
+                    }else if (counter === 1 && tsv2arr(tsv)[i].AIRLINES === "WN"){
+                        document.write("<br>", "Southwest Airlines:", "<br>");
+                        counter++;
+                    } else if (counter === 2 && tsv2arr(tsv)[i].AIRLINES === "DL"){
+                        document.write("<br>", "Delta Airlines:", "<br>");
+                        counter++;
+                    } else if (counter === 3 && tsv2arr(tsv)[i].AIRLINES === "AA"){
+                        document.write("<br>", "American Airlines:", "<br>");
+                        counter++;
+                    } else if (counter === 4 && tsv2arr(tsv)[i].AIRLINES === "UA"){
+                        document.write("<br>", "United Airlines:", "<br>");
+                        counter++;
+                    }
                     document.write(
                         "<table>", "<tr>",
                         "<td>", tsv2arr(tsv)[i].TIME, "</td>", 
@@ -452,6 +467,7 @@ while(j < 7){ //for days
             }
         }
     }else{
+        counter -= counter;
         if(j === 1){
             document.write("<br>", "<b>Flight schedule for tomorrow, </b>", daysOfTheWeek[day + j], "<br>");
         }
@@ -463,6 +479,25 @@ while(j < 7){ //for days
         for(var i= 0; i< tsv2arr(tsv).length; i++){
             if(effectiveDate <= new Date(tsv2arr(tsv)[i].ENDDATE) && effectiveDate >= new Date(tsv2arr(tsv)[i].STARTDATE)){
                 if(tsv2arr(tsv)[i].FREQUENCY === daysOfTheWeek[day + j] || tsv2arr(tsv)[i].FREQUENCY === "DAILY"){
+                    if(counter === 0){ //Hawaiian airlines
+                        document.write(
+                        "<br>", "Hawaiian Airlines: Work in progress", "<br>",
+                        "<br>", "Alaska Airlines:", "<br>"
+                    );
+                        counter++;
+                    }else if (counter === 1 && tsv2arr(tsv)[i].AIRLINES === "WN"){
+                        document.write("<br>", "Southwest Airlines:", "<br>");
+                        counter++;
+                    } else if (counter === 2 && tsv2arr(tsv)[i].AIRLINES === "DL"){
+                        document.write("<br>", "Delta Airlines:", "<br>");
+                        counter++;
+                    } else if (counter === 3 && tsv2arr(tsv)[i].AIRLINES === "AA"){
+                        document.write("<br>", "American Airlines:", "<br>");
+                        counter++;
+                    } else if (counter === 4 && tsv2arr(tsv)[i].AIRLINES === "UA"){
+                        document.write("<br>", "United Airlines:", "<br>");
+                        counter++;
+                    }
                     document.write(
                         "<table>", "<tr>",
                         "<td>", tsv2arr(tsv)[i].TIME, "</td>", 
