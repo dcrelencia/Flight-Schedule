@@ -6,11 +6,11 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk"
         crossorigin="anonymous">
-    <title>Convert excel to JSON Object</title>
+    <title>Daily Flight Schedule</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.2/xlsx.full.min.js"></script>
 </head>
-
 <body>
+    <h1 style="text-align:center">Daily Flight Schedule</h1>
     <div class="conatiner mt-5">
         <div class="row">
             <div class="col-md-3"></div>
@@ -18,7 +18,7 @@
                 <input class="form-control" type="file" id="input" accept=".xls,.xlsx"  >
             </div>
             <div class="col-md-2">
-                <button class="btn btn-primary" id="button">Convert</button>
+                <button class="btn btn-primary" id="button">Run</button>
             </div>
 <div class="col-md-12">
     <pre id="jsondata"></pre>
@@ -26,6 +26,13 @@
         </div>
     </div>
 </body>
+<footer>
+    <p>Instructions: <br>
+    <p>1.) Upload/Attach the excel file that contains the simplified flight schedule format <br>
+    <p>2.) Once the excel file is uploaded/attached, click the run button <br>
+    </p>
+  </footer>
+
 <script>
 //changes from previous version: effectiveDate = currentDate, tsv2arr(tsv) = rowObject
 let selectedFile;
@@ -35,7 +42,7 @@ document.getElementById('input').addEventListener("change", (event) => {
 })
 
 let data=[{
-    "name":"jayanth",
+    "name":"test",
     "data":"scd",
     "abc":"sdef"
 }]
@@ -66,9 +73,13 @@ document.getElementById('button').addEventListener("click", () => {
          let workbook = XLSX.read(data, { type: 'binary' , cellDates: true }); //XLSX.read(data,{type:"binary"}); -> Have to use w/ ExcelDateToJSDate https://stackoverflow.com/questions/16229494/converting-excel-date-serial-number-to-date-using-javascript/67130235#67130235
          console.log(workbook);
          workbook.SheetNames.forEach(sheet => {
-              let rowObject = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[sheet]);
-              //console.log(new Date(rowObject[20].ENDDATE), currentDate); //for debuging purposes
-              
+            let rowObject = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[sheet]);
+            //console.log(new Date(rowObject[20].ENDDATE), currentDate); //for debuging purposes
+            document.write("Notes:",  "<br>");
+            document.write( "Copy the desired data below and paste the data in Excel. The data will automatically split into different cells.", "<br>");
+            document.write("Refresh this page if you would like to go back to the main menu.", "<br>", "<br>")
+            
+            
             for(var i = 0; i < rowObject.length; i++){
                 if(currentDate <= new Date(rowObject[i].ENDDATE) && currentDate >= new Date(rowObject[i].STARTDATE)){
                     if(rowObject[i].FREQUENCY === daysOfTheWeek[day] || rowObject[i].FREQUENCY === "DAILY"){
