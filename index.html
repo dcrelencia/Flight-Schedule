@@ -1,521 +1,221 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk"
+        crossorigin="anonymous">
+    <title>Daily Flight Schedule</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.2/xlsx.full.min.js"></script>
+</head>
 <body>
-<h2>Daily Flight Schedule</h2>
-<marquee behavior="scroll" bgcolor="white" loop="-1" width="30%"><i><font color="green"><strong>Today is <span id="time"></span></strong> </font></i></marquee>
-<br>
-<style> table { font-family: 'Times New Roman', Times, serif; } </style>
+    <h1 style="text-align:center">Daily Flight Schedule</h1>
+    <div class="conatiner mt-5">
+        <div class="row">
+            <div class="col-md-3"></div>
+            <div class="col-md-3">
+                <input class="form-control" type="file" id="input" accept=".xls,.xlsx"  >
+            </div>
+            <div class="col-md-2">
+                <button class="btn btn-primary" id="button">View Data</button>
+            </div>
+<div class="col-md-12">
+    <pre id="jsondata"></pre>
+</div>
+        </div>
+    </div>
+</body>
+<footer>
+    <p>Instructions: <br>
+    <p>1.) Upload/Attach the excel file that contains the simplified flight schedule format <br>
+    <p>2.) Once the excel file is uploaded/attached, click the "View Data" button <br>
+    </p>
+  </footer>
+
 <script>
-//https://stackoverflow.com/questions/61328891/how-to-take-a-tsv-file-and-convert-to-json-in-js
-const tsv2arr = (tsv) => {
-  const [headers, ...rows] = tsv .trim () .split ('\n') .map (r => r .split ('\t'))
-  return rows .reduce ((a, r) => [
-    ... a, 
-    Object .assign (... (r .map (
-      (x, i, _, c = x.trim()) => ({[headers [i].trim()]: isNaN(c) ? c : Number(c)})
-    )))
-  ], [])
+//changes from previous version: effectiveDate = currentDate, tsv2arr(tsv) = rowObject
+//https://levelup.gitconnected.com/how-to-convert-excel-file-into-json-object-by-using-javascript-9e95532d47c5
+let selectedFile;
+console.log(window.XLSX);
+document.getElementById('input').addEventListener("change", (event) => {
+    selectedFile = event.target.files[0];
+})
+
+let data=[{
+    "name":"test",
+    "data":"scd",
+    "abc":"sdef"
+}]
+
+function ExcelDateToJSDate(date) {
+  return new Date(Math.round((date - 25569)*86400*1000));
 }
-//later use and parse a tsv file by user upload instead of the const tsv below
-const tsv =
-`STARTDATE	ENDDATE	FREQUENCY	TIME	AIRLINES	FLIGHTNO	DESTINATION
-09/01/2021	9/29/2021	SUNDAY	745	HA	6	LAS
-11/21/2021	11/21/2021	DAILY	755	HA	10	LAX
-09/16/2021	9/16/2021	THURSDAY	805	HA	94	LAS
-09/01/2021	9/30/2021	DAILY	1040	HA	36	PHX
-09/01/2021	9/6/2021	SUNDAY	1055	HA	36	PHX
-09/01/2021	9/6/2021	MONDAY	1055	HA	36	PHX
-09/01/2021	9/6/2021	WEDNESDAY	1055	HA	36	PHX
-09/01/2021	9/6/2021	THURSDAY	1055	HA	36	PHX
-09/01/2021	9/6/2021	FRIDAY	1055	HA	36	PHX
-09/01/2021	9/30/2021	SATURDAY	1055	HA	36	PHX
-09/01/2021	9/30/2021	DAILY	1105	HA	48	OAK
-09/01/2021	9/30/2021	DAILY	1115	HA	44	SJC
-09/01/2021	9/30/2021	DAILY	1120	HA	20	SMF
-09/07/2021	9/20/2021	SUNDAY	1420	HA	90	BOS
-09/07/2021	9/20/2021	TUESDAY	1420	HA	90	BOS
-09/07/2021	9/20/2021	THURSDAY	1420	HA	90	BOS
-09/07/2021	9/20/2021	SATURDAY	1420	HA	90	BOS
-						
-11/07/2021	11/18/2021	DAILY	905	AS	942	SEA
-11/07/2021	11/18/2021	DAILY	1200	AS	896	SEA
-11/07/2021	11/18/2021	DAILY	1205	AS	892	SAN
-11/07/2021	11/18/2021	DAILY	1330	AS	830	SJC
-11/07/2021	11/18/2021	DAILY	1410	AS	866	LAX
-11/07/2021	11/18/2021	DAILY	1535	AS	834	PDX
-11/07/2021	11/18/2021	SUNDAY	1635	AS	352	SFO
-11/07/2021	11/18/2021	MONDAY	1635	AS	352	SFO
-11/07/2021	11/18/2021	WEDNESDAY	1635	AS	352	SFO
-11/07/2021	11/18/2021	FRIDAY	1635	AS	352	SFO
-11/07/2021	11/18/2021	DAILY	2200	AS	246	SEA
-11/07/2021	11/18/2021	DAILY	2320	AS	891	SEA
-11/07/2021	11/18/2021	DAILY	2455	AS	871	ANC
-11/18/2021	11/30/2021	DAILY	1145	AS	838	SEA
-11/18/2021	11/30/2021	DAILY	1220	AS	892	SAN
-11/18/2021	11/30/2021	DAILY	1330	AS	859	SEA
-11/19/2021	11/30/2021	DAILY	1400	AS	830	SJC
-11/18/2021	11/30/2021	DAILY	1520	AS	866	LAX
-11/18/2021	11/30/2021	DAILY	1535	AS	834	PDX
-11/18/2021	11/30/2021	DAILY	1650	AS	710	SFO
-11/18/2021	11/30/2021	DAILY	2210	AS	897	SEA
-11/18/2021	11/30/2021	DAILY	2310	AS	246	SEA
-11/18/2021	11/30/2021	DAILY	2355	AS	871	ANC
-						
-11/08/2021	12/4/2021	DAILY	640	WN	621	OGG
-11/08/2021	12/4/2021	DAILY	700	WN	1057	LAS
-11/08/2021	12/4/2021	DAILY	700	WN	1057	LAX
-11/08/2021	12/4/2021	DAILY	715	WN	1069	PHX
-11/08/2021	12/4/2021	DAILY	800	WN	825	OGG
-11/08/2021	12/4/2021	DAILY	805	WN	564	LAX
-11/08/2021	12/4/2021	DAILY	820	WN	1063	OAK
-11/08/2021	12/4/2021	DAILY	825	WN	1845	ITO
-11/08/2021	12/4/2021	DAILY	905	WN	1051	KOA
-11/08/2021	12/4/2021	DAILY	915	WN	1287	SAN
-11/08/2021	12/4/2021	DAILY	935	WN	452	LIH
-11/08/2021	12/4/2021	DAILY	1150	WN	417	OGG
-11/08/2021	12/4/2021	DAILY	1155	WN	1848	KOA
-11/08/2021	12/4/2021	DAILY	1225	WN	447	LIH
-11/08/2021	12/4/2021	DAILY	1235	WN	1056	SMF
-11/08/2021	12/4/2021	DAILY	1235	WN	1056	LAX
-11/08/2021	12/4/2021	DAILY	1300	WN	2183	LGB
-11/08/2021	12/4/2021	DAILY	1310	WN	436	ITO
-11/08/2021	12/4/2021	DAILY	1455	WN	355	SJC
-11/08/2021	12/4/2021	DAILY	1505	WN	1853	SAN
-11/08/2021	12/4/2021	DAILY	1525	WN	1323	KOA
-11/08/2021	12/4/2021	DAILY	1530	WN	405	OGG
-11/08/2021	12/4/2021	DAILY	1545	WN	429	LIH
-11/08/2021	12/4/2021	DAILY	1615	WN	445	ITO
-11/08/2021	12/4/2021	DAILY	1640	WN	310	OAK
-11/08/2021	12/4/2021	DAILY	1650	WN	1378	LAX
-11/08/2021	12/4/2021	DAILY	1850	WN	424	OGG
-11/08/2021	12/4/2021	DAILY	1955	WN	1325	KOA
-11/08/2021	12/4/2021	DAILY	2015	WN	1363	ITO
-11/08/2021	12/4/2021	DAILY	2030	WN	2327	OGG
-11/08/2021	12/4/2021	DAILY	2115	WN	354	LIH
-						
-11/07/21	12/03/21	DAILY	809	DL	368	LAX
-12/04/21	12/04/21	DAILY	800	DL	368	LAX
-11/07/21	12/04/21	DAILY	1333	DL	495	LAX
-11/07/21	11/22/21	MONDAY	1700	DL	304	ATL
-11/07/21	11/22/21	WEDNESDAY	1700	DL	304	ATL
-11/07/21	11/22/21	THURSDAY	1700	DL	304	ATL
-11/07/21	11/22/21	FRIDAY	1700	DL	304	ATL
-11/07/21	11/22/21	SATURDAY	1700	DL	304	ATL
-11/07/21	11/22/21	SUNDAY	1700	DL	304	ATL
-11/24/21	12/4/21	MONDAY	1700	DL	304	ATL
-11/24/21	12/4/21	WEDNESDAY	1700	DL	304	ATL
-11/24/21	12/4/21	THURSDAY	1700	DL	304	ATL
-11/24/21	12/4/21	FRIDAY	1700	DL	304	ATL
-11/24/21	12/4/21	SATURDAY	1700	DL	304	ATL
-11/24/21	12/4/21	SUNDAY	1700	DL	304	ATL
-11/20/21	12/4/21	DAILY	1800	DL	497	MSP
-11/07/21	12/4/21	DAILY	2120	DL	347	SLC
-11/07/21	12/4/21	DAILY	2221	DL	331	LAX
-11/08/21	11/21/21	DAILY	2248	DL	440	SEA
-11/23/21	11/28/21	TUESDAY	2248	DL	440	SEA
-11/23/21	11/28/21	THURSDAY	2248	DL	440	SEA
-11/23/21	11/28/21	FRIDAY	2248	DL	440	SEA
-11/23/21	11/28/21	SATURDAY	2248	DL	440	SEA
-11/23/21	11/28/21	SUNDAY	2248	DL	440	SEA
-11/29/21	12/4/21	DAILY	2248	DL	440	SEA
-						
-2021/11/12	2021/11/30	DAILY	800	AA	1480	LAX
-2021/11/12	2021/11/30	DAILY	1339	AA	162	LAX
-2021/11/12	2021/11/30	DAILY	1708	AA	552	CLT
-2021/11/18	2021/11/19	DAILY	1810	AA	115	DFW
-2021/11/22	2021/11/24	DAILY	1810	AA	115	DFW
-2021/11/26	2021/11/30	DAILY	1810	AA	115	DFW
-2021/11/13	2021/11/17	DAILY	1840	AA	115	DFW
-2021/11/20	2021/11/21	DAILY	1940	AA	8	DFW
-2021/11/13	2021/11/19	DAILY	2003	AA	102	DFW
-2021/11/22	2021/11/30	DAILY	2003	AA	102	DFW
-2021/11/25	2021/11/25	DAILY	2115	AA	102	DFW
-2021/11/20	2021/11/21	DAILY	2120	AA	102	DFW
-2021/11/13	2021/11/30	DAILY	2155	AA	693	PHX
-2021/11/13	2021/11/20	DAILY	2240	AA	224	LAX
-2021/11/22	2021/11/27	DAILY	2240	AA	224	LAX
-2021/11/29	2021/11/30	DAILY	2240	AA	224	LAX
-2021/11/24	2021/11/24	DAILY	2250	AA	675	PHX
-2021/11/13	2021/11/23	DAILY	2320	AA	675	PHX
-2021/11/25	2021/11/30	DAILY	2320	AA	675	PHX
-2021/11/25	2021/11/26	DAILY	2330	AA	115	DFW
-2021/11/13	2021/11/24	DAILY	2350	AA	144	LAX
-2021/11/27	2021/11/30	DAILY	2350	AA	144	LAX
-						
-						
-2021/11/16	2021/11/16	DAILY	800	UA	372	SFO
-2021/11/16	2021/11/16	DAILY	945	UA	588	SFO
-2021/11/16	2021/11/16	DAILY	950	UA	1221	LAX
-2021/11/16	2021/11/16	DAILY	1335	UA	410	SNA
-2021/11/16	2021/11/16	DAILY	1400	UA	724	SFO
-2021/11/16	2021/11/16	DAILY	1510	UA	201	GUM
-2021/11/16	2021/11/16	DAILY	1530	UA	1636	LAX
-2021/11/16	2021/11/16	DAILY	1640	UA	362	EWR
-2021/11/16	2021/11/16	DAILY	1815	UA	218	ORD
-2021/11/16	2021/11/16	DAILY	2045	UA	252	IAH
-2021/11/16	2021/11/16	DAILY	2100	UA	383	DEN
-2021/11/16	2021/11/16	DAILY	2245	UA	534	LAX
-2021/11/16	2021/11/16	DAILY	2330	UA	650	SFO
-2021/11/17	2021/11/17	DAILY	730	UA	132	MAJ
-2021/11/17	2021/11/17	DAILY	800	UA	372	SFO
-2021/11/17	2021/11/17	DAILY	945	UA	588	SFO
-2021/11/17	2021/11/17	DAILY	950	UA	1221	LAX
-2021/11/17	2021/11/17	DAILY	1335	UA	410	SNA
-2021/11/17	2021/11/17	DAILY	1400	UA	724	SFO
-2021/11/17	2021/11/17	DAILY	1510	UA	201	GUM
-2021/11/17	2021/11/17	DAILY	1530	UA	1636	LAX
-2021/11/17	2021/11/17	DAILY	1640	UA	362	EWR
-2021/11/17	2021/11/17	DAILY	1815	UA	218	ORD
-2021/11/17	2021/11/17	DAILY	2045	UA	252	IAH
-2021/11/17	2021/11/17	DAILY	2100	UA	383	DEN
-2021/11/17	2021/11/17	DAILY	2245	UA	534	LAX
-2021/11/17	2021/11/17	DAILY	2330	UA	650	SFO
-2021/11/18	2021/11/18	DAILY	800	UA	372	SFO
-2021/11/18	2021/11/18	DAILY	945	UA	588	SFO
-2021/11/18	2021/11/18	DAILY	950	UA	1221	LAX
-2021/11/18	2021/11/18	DAILY	1335	UA	410	SNA
-2021/11/18	2021/11/18	DAILY	1400	UA	724	SFO
-2021/11/18	2021/11/18	DAILY	1510	UA	201	GUM
-2021/11/18	2021/11/18	DAILY	1530	UA	1636	LAX
-2021/11/18	2021/11/18	DAILY	1640	UA	362	EWR
-2021/11/18	2021/11/18	DAILY	1815	UA	218	ORD
-2021/11/18	2021/11/18	DAILY	2045	UA	252	IAH
-2021/11/18	2021/11/18	DAILY	2100	UA	383	DEN
-2021/11/18	2021/11/18	DAILY	2245	UA	534	LAX
-2021/11/18	2021/11/18	DAILY	2330	UA	650	SFO
-2021/11/19	2021/11/19	DAILY	800	UA	372	SFO
-2021/11/19	2021/11/19	DAILY	945	UA	588	SFO
-2021/11/19	2021/11/19	DAILY	950	UA	1221	LAX
-2021/11/19	2021/11/19	DAILY	1335	UA	410	SNA
-2021/11/19	2021/11/19	DAILY	1400	UA	724	SFO
-2021/11/19	2021/11/19	DAILY	1415	UA	1231	LAX
-2021/11/19	2021/11/19	DAILY	1510	UA	201	GUM
-2021/11/19	2021/11/19	DAILY	1530	UA	1636	LAX
-2021/11/19	2021/11/19	DAILY	1640	UA	362	EWR
-2021/11/19	2021/11/19	DAILY	1815	UA	218	ORD
-2021/11/19	2021/11/19	DAILY	2045	UA	252	IAH
-2021/11/19	2021/11/19	DAILY	2100	UA	383	DEN
-2021/11/19	2021/11/19	DAILY	2215	UA	396	SFO
-2021/11/19	2021/11/19	DAILY	2245	UA	534	LAX
-2021/11/19	2021/11/19	DAILY	2255	UA	1806	DEN
-2021/11/19	2021/11/19	DAILY	2330	UA	650	SFO
-2021/11/20	2021/11/20	DAILY	800	UA	372	SFO
-2021/11/20	2021/11/20	DAILY	945	UA	588	SFO
-2021/11/20	2021/11/20	DAILY	950	UA	1221	LAX
-2021/11/20	2021/11/20	DAILY	1335	UA	410	SNA
-2021/11/20	2021/11/20	DAILY	1400	UA	724	SFO
-2021/11/20	2021/11/20	DAILY	1415	UA	1231	LAX
-2021/11/20	2021/11/20	DAILY	1510	UA	201	GUM
-2021/11/20	2021/11/20	DAILY	1530	UA	1636	LAX
-2021/11/20	2021/11/20	DAILY	1640	UA	362	EWR
-2021/11/20	2021/11/20	DAILY	1700	UA	344	IAD
-2021/11/20	2021/11/20	DAILY	1815	UA	218	ORD
-2021/11/20	2021/11/20	DAILY	2045	UA	252	IAH
-2021/11/20	2021/11/20	DAILY	2100	UA	383	DEN
-2021/11/20	2021/11/20	DAILY	2215	UA	396	SFO
-2021/11/20	2021/11/20	DAILY	2245	UA	534	LAX
-2021/11/20	2021/11/20	DAILY	2255	UA	1806	DEN
-2021/11/20	2021/11/20	DAILY	2330	UA	650	SFO
-2021/11/21	2021/11/21	DAILY	800	UA	372	SFO
-2021/11/21	2021/11/21	DAILY	945	UA	588	SFO
-2021/11/21	2021/11/21	DAILY	1013	UA	1221	LAX
-2021/11/21	2021/11/21	DAILY	1305	UA	410	SNA
-2021/11/21	2021/11/21	DAILY	1400	UA	724	SFO
-2021/11/21	2021/11/21	DAILY	1415	UA	1231	LAX
-2021/11/21	2021/11/21	DAILY	1510	UA	201	GUM
-2021/11/21	2021/11/21	DAILY	1530	UA	1636	LAX
-2021/11/21	2021/11/21	DAILY	1640	UA	362	EWR
-2021/11/21	2021/11/21	DAILY	1815	UA	218	ORD
-2021/11/21	2021/11/21	DAILY	2045	UA	252	IAH
-2021/11/21	2021/11/21	DAILY	2100	UA	383	DEN
-2021/11/21	2021/11/21	DAILY	2215	UA	396	SFO
-2021/11/21	2021/11/21	DAILY	2245	UA	534	LAX
-2021/11/21	2021/11/21	DAILY	2255	UA	1806	DEN
-2021/11/21	2021/11/21	DAILY	2330	UA	650	SFO
-2021/11/22	2021/11/22	DAILY	725	UA	154	MAJ
-2021/11/22	2021/11/22	DAILY	800	UA	372	SFO
-2021/11/22	2021/11/22	DAILY	945	UA	588	SFO
-2021/11/22	2021/11/22	DAILY	950	UA	1221	LAX
-2021/11/22	2021/11/22	DAILY	1335	UA	410	SNA
-2021/11/22	2021/11/22	DAILY	1400	UA	724	SFO
-2021/11/22	2021/11/22	DAILY	1415	UA	1231	LAX
-2021/11/22	2021/11/22	DAILY	1510	UA	201	GUM
-2021/11/22	2021/11/22	DAILY	1530	UA	1636	LAX
-2021/11/22	2021/11/22	DAILY	1640	UA	362	EWR
-2021/11/22	2021/11/22	DAILY	1815	UA	218	ORD
-2021/11/22	2021/11/22	DAILY	2045	UA	252	IAH
-2021/11/22	2021/11/22	DAILY	2100	UA	383	DEN
-2021/11/22	2021/11/22	DAILY	2215	UA	396	SFO
-2021/11/22	2021/11/22	DAILY	2245	UA	534	LAX
-2021/11/22	2021/11/22	DAILY	2255	UA	1806	DEN
-2021/11/22	2021/11/22	DAILY	2330	UA	650	SFO
-2021/11/23	2021/11/23	DAILY	800	UA	372	SFO
-2021/11/23	2021/11/23	DAILY	945	UA	588	SFO
-2021/11/23	2021/11/23	DAILY	950	UA	1221	LAX
-2021/11/23	2021/11/23	DAILY	1335	UA	410	SNA
-2021/11/23	2021/11/23	DAILY	1400	UA	724	SFO
-2021/11/23	2021/11/23	DAILY	1415	UA	1231	LAX
-2021/11/23	2021/11/23	DAILY	1510	UA	201	GUM
-2021/11/23	2021/11/23	DAILY	1530	UA	1636	LAX
-2021/11/23	2021/11/23	DAILY	1640	UA	362	EWR
-2021/11/23	2021/11/23	DAILY	1815	UA	218	ORD
-2021/11/23	2021/11/23	DAILY	2045	UA	252	IAH
-2021/11/23	2021/11/23	DAILY	2100	UA	383	DEN
-2021/11/23	2021/11/23	DAILY	2215	UA	396	SFO
-2021/11/23	2021/11/23	DAILY	2245	UA	534	LAX
-2021/11/23	2021/11/23	DAILY	2255	UA	1806	DEN
-2021/11/23	2021/11/23	DAILY	2330	UA	650	SFO
-2021/11/24	2021/11/24	DAILY	730	UA	132	MAJ
-2021/11/24	2021/11/24	DAILY	800	UA	372	SFO
-2021/11/24	2021/11/24	DAILY	945	UA	588	SFO
-2021/11/24	2021/11/24	DAILY	950	UA	1221	LAX
-2021/11/24	2021/11/24	DAILY	1335	UA	410	SNA
-2021/11/24	2021/11/24	DAILY	1400	UA	724	SFO
-2021/11/24	2021/11/24	DAILY	1415	UA	1231	LAX
-2021/11/24	2021/11/24	DAILY	1510	UA	201	GUM
-2021/11/24	2021/11/24	DAILY	1530	UA	1636	LAX
-2021/11/24	2021/11/24	DAILY	1640	UA	362	EWR
-2021/11/24	2021/11/24	DAILY	1815	UA	218	ORD
-2021/11/24	2021/11/24	DAILY	2045	UA	252	IAH
-2021/11/24	2021/11/24	DAILY	2100	UA	383	DEN
-2021/11/24	2021/11/24	DAILY	2215	UA	396	SFO
-2021/11/24	2021/11/24	DAILY	2245	UA	534	LAX
-2021/11/24	2021/11/24	DAILY	2255	UA	1806	DEN
-2021/11/24	2021/11/24	DAILY	2330	UA	650	SFO
-2021/11/25	2021/11/25	DAILY	800	UA	372	SFO
-2021/11/25	2021/11/25	DAILY	945	UA	588	SFO
-2021/11/25	2021/11/25	DAILY	950	UA	1221	LAX
-2021/11/25	2021/11/25	DAILY	1335	UA	410	SNA
-2021/11/25	2021/11/25	DAILY	1400	UA	724	SFO
-2021/11/25	2021/11/25	DAILY	1415	UA	1231	LAX
-2021/11/25	2021/11/25	DAILY	1510	UA	201	GUM
-2021/11/25	2021/11/25	DAILY	1530	UA	1636	LAX
-2021/11/25	2021/11/25	DAILY	1640	UA	362	EWR
-2021/11/25	2021/11/25	DAILY	1815	UA	218	ORD
-2021/11/25	2021/11/25	DAILY	2045	UA	252	IAH
-2021/11/25	2021/11/25	DAILY	2215	UA	396	SFO
-2021/11/25	2021/11/25	DAILY	2240	UA	1806	DEN
-2021/11/25	2021/11/25	DAILY	2245	UA	534	LAX
-2021/11/25	2021/11/25	DAILY	2330	UA	650	SFO
-2021/11/26	2021/11/26	DAILY	800	UA	372	SFO
-2021/11/26	2021/11/26	DAILY	945	UA	588	SFO
-2021/11/26	2021/11/26	DAILY	950	UA	1221	LAX
-2021/11/26	2021/11/26	DAILY	1335	UA	410	SNA
-2021/11/26	2021/11/26	DAILY	1400	UA	724	SFO
-2021/11/26	2021/11/26	DAILY	1415	UA	1231	LAX
-2021/11/26	2021/11/26	DAILY	1510	UA	201	GUM
-2021/11/26	2021/11/26	DAILY	1530	UA	1636	LAX
-2021/11/26	2021/11/26	DAILY	1640	UA	362	EWR
-2021/11/26	2021/11/26	DAILY	1815	UA	218	ORD
-2021/11/26	2021/11/26	DAILY	2045	UA	252	IAH
-2021/11/26	2021/11/26	DAILY	2100	UA	383	DEN
-2021/11/26	2021/11/26	DAILY	2215	UA	396	SFO
-2021/11/26	2021/11/26	DAILY	2245	UA	534	LAX
-2021/11/26	2021/11/26	DAILY	2255	UA	1806	DEN
-2021/11/26	2021/11/26	DAILY	2330	UA	650	SFO
-2021/11/27	2021/11/27	DAILY	800	UA	372	SFO
-2021/11/27	2021/11/27	DAILY	945	UA	588	SFO
-2021/11/27	2021/11/27	DAILY	950	UA	1221	LAX
-2021/11/27	2021/11/27	DAILY	1335	UA	410	SNA
-2021/11/27	2021/11/27	DAILY	1400	UA	724	SFO
-2021/11/27	2021/11/27	DAILY	1415	UA	1231	LAX
-2021/11/27	2021/11/27	DAILY	1510	UA	201	GUM
-2021/11/27	2021/11/27	DAILY	1530	UA	1636	LAX
-2021/11/27	2021/11/27	DAILY	1640	UA	362	EWR
-2021/11/27	2021/11/27	DAILY	1700	UA	344	IAD
-2021/11/27	2021/11/27	DAILY	1815	UA	218	ORD
-2021/11/27	2021/11/27	DAILY	2045	UA	252	IAH
-2021/11/27	2021/11/27	DAILY	2100	UA	383	DEN
-2021/11/27	2021/11/27	DAILY	2215	UA	396	SFO
-2021/11/27	2021/11/27	DAILY	2245	UA	534	LAX
-2021/11/27	2021/11/27	DAILY	2255	UA	1806	DEN
-2021/11/27	2021/11/27	DAILY	2330	UA	650	SFO
-2021/11/28	2021/11/28	DAILY	800	UA	372	SFO
-2021/11/28	2021/11/28	DAILY	945	UA	588	SFO
-2021/11/28	2021/11/28	DAILY	1013	UA	1221	LAX
-2021/11/28	2021/11/28	DAILY	1305	UA	410	SNA
-2021/11/28	2021/11/28	DAILY	1400	UA	724	SFO
-2021/11/28	2021/11/28	DAILY	1415	UA	1231	LAX
-2021/11/28	2021/11/28	DAILY	1510	UA	201	GUM
-2021/11/28	2021/11/28	DAILY	1530	UA	1636	LAX
-2021/11/28	2021/11/28	DAILY	1640	UA	362	EWR
-2021/11/28	2021/11/28	DAILY	1815	UA	218	ORD
-2021/11/28	2021/11/28	DAILY	2045	UA	252	IAH
-2021/11/28	2021/11/28	DAILY	2100	UA	383	DEN
-2021/11/28	2021/11/28	DAILY	2245	UA	534	LAX
-2021/11/28	2021/11/28	DAILY	2255	UA	1806	DEN
-2021/11/28	2021/11/28	DAILY	2330	UA	650	SFO
-2021/11/29	2021/11/29	DAILY	725	UA	154	MAJ
-2021/11/29	2021/11/29	DAILY	800	UA	372	SFO
-2021/11/29	2021/11/29	DAILY	945	UA	588	SFO
-2021/11/29	2021/11/29	DAILY	950	UA	1221	LAX
-2021/11/29	2021/11/29	DAILY	1335	UA	410	SNA
-2021/11/29	2021/11/29	DAILY	1400	UA	724	SFO
-2021/11/29	2021/11/29	DAILY	1510	UA	201	GUM
-2021/11/29	2021/11/29	DAILY	1530	UA	1636	LAX
-2021/11/29	2021/11/29	DAILY	1640	UA	362	EWR
-2021/11/29	2021/11/29	DAILY	1815	UA	218	ORD
-2021/11/29	2021/11/29	DAILY	2045	UA	252	IAH
-2021/11/29	2021/11/29	DAILY	2100	UA	383	DEN
-2021/11/29	2021/11/29	DAILY	2245	UA	534	LAX
-2021/11/29	2021/11/29	DAILY	2330	UA	650	SFO
-2021/11/30	2021/11/30	DAILY	800	UA	372	SFO
-2021/11/30	2021/11/30	DAILY	945	UA	588	SFO
-2021/11/30	2021/11/30	DAILY	950	UA	1221	LAX
-2021/11/30	2021/11/30	DAILY	1335	UA	410	SNA
-2021/11/30	2021/11/30	DAILY	1400	UA	724	SFO
-2021/11/30	2021/11/30	DAILY	1510	UA	201	GUM
-2021/11/30	2021/11/30	DAILY	1530	UA	1636	LAX
-2021/11/30	2021/11/30	DAILY	1640	UA	362	EWR
-2021/11/30	2021/11/30	DAILY	1815	UA	218	ORD
-2021/11/30	2021/11/30	DAILY	2045	UA	252	IAH
-2021/11/30	2021/11/30	DAILY	2100	UA	383	DEN
-2021/11/30	2021/11/30	DAILY	2245	UA	534	LAX
-2021/11/30	2021/11/30	DAILY	2330	UA	650	SFO
-`
+
 const daysOfTheWeek = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"];
 const d = new Date();
 let day = d.getDay()
-var effectiveDate = new Date();
-effectiveDate.setHours(0, 0, 0, 0);
+var currentDate = new Date();
+currentDate.setHours(0, 0, 0, 0);
 //https://stackoverflow.com/questions/11170054/compare-dates-with-javascript
 //https://dev.to/ganeshmani/3-efficient-ways-to-get-tomorrow-date-using-javascript-10b1
-document.getElementById('time').innerHTML=d;
 var counter = 0;
-document.write("Notes:",  "<br>");
-document.write("Copy the desired data below and paste the data in Excel. The data will automatically split into different cells.", "<br>");
-document.write("The data below represents the outbound flights from today and up to 1 week in advance.", "<br>", "<br>");
-
-//today
-for(var i = 0; i < tsv2arr(tsv).length; i++){
-	if(effectiveDate <= new Date(tsv2arr(tsv)[i].ENDDATE) && effectiveDate >= new Date(tsv2arr(tsv)[i].STARTDATE)){ //change once you get the recent schedule. effectiveDate <= new Date(tsv2arr(tsv)[i].ENDDATE) && STARTDATE...
-        if(tsv2arr(tsv)[i].FREQUENCY === daysOfTheWeek[day] || tsv2arr(tsv)[i].FREQUENCY === "DAILY"){
-            if(counter === 0){ //Hawaiian airlines
-                document.write(
-                    "<b>Flight schedule for today, </b>", daysOfTheWeek[day], "<br>",
-                    "<br>", "Hawaiian Airlines: Work in progress", "<br>",
-                    "<br>", "Alaska Airlines:", "<br>"
-                    );
-                counter++;
-            }else if (counter === 1 && tsv2arr(tsv)[i].AIRLINES === "WN"){
-                document.write("<br>", "Southwest Airlines:", "<br>");
-                counter++;
-            }else if (counter === 2 && tsv2arr(tsv)[i].AIRLINES === "DL"){
-                document.write("<br>", "Delta Airlines:", "<br>");
-                counter++;
-            }else if (counter === 3 && tsv2arr(tsv)[i].AIRLINES === "AA"){
-                document.write("<br>", "American Airlines:", "<br>");
-                counter++;
-            }else if (counter === 4 && tsv2arr(tsv)[i].AIRLINES === "UA"){
-                document.write("<br>", "United Airlines:", "<br>");
-                counter++;
-            }
-            document.write(
-                //https://www.w3schools.com/html/html_tables.asp
-                "<table>", "<tr>",
-                "<td>", tsv2arr(tsv)[i].TIME, "</td>", 
-                "<td>", tsv2arr(tsv)[i].AIRLINES, "</td>", 
-                "<td>", tsv2arr(tsv)[i].FLIGHTNO, "</td>",
-                "<td>", tsv2arr(tsv)[i].DESTINATION, "</td>",
-                "</tr>", "</table>"
-            );
-        }
-    }
-}
 var j = 0;
-while(j < 7){ //for days
-    j++;
-    //console.log(j, day + j);
-    if(daysOfTheWeek.indexOf(daysOfTheWeek[day + j]) === -1){ //if array is out of bound, subtract 7 to get to the appropriate index and print its element.
-        counter -= counter;
-        if(j === 1){
-            document.write("<br>", "<b>Flight schedule for tomorrow, </b>", daysOfTheWeek[(day + j) - 7], "<br>");
-        }
-        else if(j === 7){
-            document.write("<br>", "<b>Flight schedule for the following </b>", daysOfTheWeek[(day + j) - 7], "<br>");
-        }
-        else
-            document.write("<br>", "<b>Flight schedule for </b>", daysOfTheWeek[(day + j) - 7], "<br>");
-        for(var i = 0; i< tsv2arr(tsv).length; i++){
-            if(effectiveDate <= new Date(tsv2arr(tsv)[i].ENDDATE) && effectiveDate >= new Date(tsv2arr(tsv)[i].STARTDATE)){
-                if(tsv2arr(tsv)[i].FREQUENCY === daysOfTheWeek[(day + j) - 7] || tsv2arr(tsv)[i].FREQUENCY === "DAILY"){
-                    if(counter === 0){ //Hawaiian airlines
+
+document.getElementById('button').addEventListener("click", () => {
+    XLSX.utils.json_to_sheet(data, 'out.xlsx');
+    if(selectedFile){
+        let fileReader = new FileReader();
+        fileReader.readAsBinaryString(selectedFile);
+        fileReader.onload = (event)=>{
+         let data = event.target.result;
+         //https://stackoverflow.com/questions/62770664/date-format-changing-when-converting-xlsx-to-json
+         let workbook = XLSX.read(data, { type: 'binary' , cellDates: true }); //XLSX.read(data,{type:"binary"}); -> Have to use w/ ExcelDateToJSDate https://stackoverflow.com/questions/16229494/converting-excel-date-serial-number-to-date-using-javascript/67130235#67130235
+         console.log(workbook);
+         workbook.SheetNames.forEach(sheet => {
+            let rowObject = XLSX.utils.sheet_to_row_object_array(workbook.Sheets[sheet]);
+            //console.log(new Date(rowObject[20].ENDDATE), currentDate); //for debuging purposes
+            document.write("Notes:",  "<br>");
+            document.write("Copy the desired data below and paste the data in Excel. The data will automatically split into different cells.", "<br>");
+            document.write("The data below represents the outbound flights from today and up to 1 week in advance.", "<br>");
+            document.write("Refresh this page if you would like to go back to the main menu.", "<br>", "<br>")
+            
+            for(var i = 0; i < rowObject.length; i++){
+                if(currentDate > new Date(rowObject[i].ENDDATE)){ //currentDate <= new Date(rowObject[i].ENDDATE) && currentDate >= new Date(rowObject[i].STARTDATE)
+                    if(rowObject[i].FREQUENCY === daysOfTheWeek[day] || rowObject[i].FREQUENCY === "DAILY"){
+                        if(counter === 0){ //Hawaiian airlines
+                            document.write(
+                                "<b>Flight schedule for today, </b>", daysOfTheWeek[day], "<br>",
+                                "<br>", "Hawaiian Airlines:", "<br>"
+                        );
+                            counter++;
+                        }else if (counter === 1 && rowObject[i].AIRLINES === "AS"){
+                            document.write("<br>", "Alaska Airlines:", "<br>");
+                            counter++;
+                        }else if (counter === 2 && rowObject[i].AIRLINES === "WN"){
+                            document.write("<br>", "Southwest Airlines:", "<br>");
+                            counter++;
+                        }else if (counter === 3 && rowObject[i].AIRLINES === "DL"){
+                            document.write("<br>", "Delta Airlines:", "<br>");
+                            counter++;
+                        }else if (counter === 4 && rowObject[i].AIRLINES === "AA"){
+                            document.write("<br>", "American Airlines:", "<br>");
+                            counter++;
+                        }else if (counter === 5 && rowObject[i].AIRLINES === "UA"){
+                            document.write("<br>", "United Airlines:", "<br>");
+                            counter++;
+                        }
                         document.write(
-                        "<br>", "Hawaiian Airlines: Work in progress", "<br>",
-                        "<br>", "Alaska Airlines:", "<br>"
-                    );
-                        counter++;
-                    }else if (counter === 1 && tsv2arr(tsv)[i].AIRLINES === "WN"){
-                        document.write("<br>", "Southwest Airlines:", "<br>");
-                        counter++;
-                    } else if (counter === 2 && tsv2arr(tsv)[i].AIRLINES === "DL"){
-                        document.write("<br>", "Delta Airlines:", "<br>");
-                        counter++;
-                    } else if (counter === 3 && tsv2arr(tsv)[i].AIRLINES === "AA"){
-                        document.write("<br>", "American Airlines:", "<br>");
-                        counter++;
-                    } else if (counter === 4 && tsv2arr(tsv)[i].AIRLINES === "UA"){
-                        document.write("<br>", "United Airlines:", "<br>");
-                        counter++;
+                            //https://www.w3schools.com/html/html_tables.asp
+                            "<table>", "<tr>",
+                            "<td>", rowObject[i].TIME, "</td>", 
+                            "<td>", rowObject[i].AIRLINES, "</td>", 
+                            "<td>", rowObject[i].FLIGHTNO, "</td>",
+                            "<td>", rowObject[i].DESTINATION, "</td>",
+                            "</tr>", "</table>"
+                        );
                     }
-                    document.write(
-                        "<table>", "<tr>",
-                        "<td>", tsv2arr(tsv)[i].TIME, "</td>", 
-                        "<td>", tsv2arr(tsv)[i].AIRLINES, "</td>", 
-                        "<td>", tsv2arr(tsv)[i].FLIGHTNO, "</td>",
-                        "<td>", tsv2arr(tsv)[i].DESTINATION, "</td>",
-                        "</tr>", "</table>"
-                    );
                 }
             }
-        }
-    }else{
-        counter -= counter;
-        if(j === 1){
-            document.write("<br>", "<b>Flight schedule for tomorrow, </b>", daysOfTheWeek[day + j], "<br>");
-        }
-        else if(j === 7){
-            document.write("<br>", "<b>Flight schedule for the following </b>", daysOfTheWeek[day + j], "<br>");
-        }
-        else
-            document.write("<br>", "<b>Flight schedule for </b>", daysOfTheWeek[day + j], "<br>");
-        for(var i= 0; i< tsv2arr(tsv).length; i++){
-            if(effectiveDate <= new Date(tsv2arr(tsv)[i].ENDDATE) && effectiveDate >= new Date(tsv2arr(tsv)[i].STARTDATE)){
-                if(tsv2arr(tsv)[i].FREQUENCY === daysOfTheWeek[day + j] || tsv2arr(tsv)[i].FREQUENCY === "DAILY"){
-                    if(counter === 0){ //Hawaiian airlines
-                        document.write(
-                        "<br>", "Hawaiian Airlines: Work in progress", "<br>",
-                        "<br>", "Alaska Airlines:", "<br>"
-                    );
-                        counter++;
-                    }else if (counter === 1 && tsv2arr(tsv)[i].AIRLINES === "WN"){
-                        document.write("<br>", "Southwest Airlines:", "<br>");
-                        counter++;
-                    } else if (counter === 2 && tsv2arr(tsv)[i].AIRLINES === "DL"){
-                        document.write("<br>", "Delta Airlines:", "<br>");
-                        counter++;
-                    } else if (counter === 3 && tsv2arr(tsv)[i].AIRLINES === "AA"){
-                        document.write("<br>", "American Airlines:", "<br>");
-                        counter++;
-                    } else if (counter === 4 && tsv2arr(tsv)[i].AIRLINES === "UA"){
-                        document.write("<br>", "United Airlines:", "<br>");
-                        counter++;
+            while(j < 7){ //for days
+                j++;
+                //console.log(j, day + j);
+                if(daysOfTheWeek.indexOf(daysOfTheWeek[day + j]) === -1){ //if array is out of bound, subtract 7 to get to the appropriate index and print its element.
+                    counter -= counter;
+                    if(j === 1){
+                        document.write("<br>", "<b>Flight schedule for tomorrow, </b>", daysOfTheWeek[(day + j) - 7], "<br>");
                     }
-                    document.write(
-                        "<table>", "<tr>",
-                        "<td>", tsv2arr(tsv)[i].TIME, "</td>", 
-                        "<td>", tsv2arr(tsv)[i].AIRLINES, "</td>", 
-                        "<td>", tsv2arr(tsv)[i].FLIGHTNO, "</td>",
-                        "<td>", tsv2arr(tsv)[i].DESTINATION, "</td>",
-                        "</tr>", "</table>"
-                    );
+                    else if(j === 7){
+                        document.write("<br>", "<b>Flight schedule for the next </b>", daysOfTheWeek[(day + j) - 7], "<br>");
+                    }
+                    else
+                        document.write("<br>", "<b>Flight schedule for </b>", daysOfTheWeek[(day + j) - 7], "<br>");
+                    for(var i = 0; i< rowObject.length; i++){
+                        if(currentDate > new Date(rowObject[i].ENDDATE)){//currentDate <= new Date(rowObject[i].ENDDATE) && currentDate >= new Date(rowObject[i].STARTDATE)
+                            if(rowObject[i].FREQUENCY === daysOfTheWeek[(day + j) - 7] || rowObject[i].FREQUENCY === "DAILY"){
+                                if(counter === 0){ //Hawaiian airlines
+                                    document.write(
+                                    "<br>", "Hawaiian Airlines:", "<br>"
+                                );
+                                    counter++;
+                                } else if (counter === 1 && rowObject[i].AIRLINES === "AS"){
+                                    document.write("<br>", "Alaska Airlines:", "<br>");
+                                    counter++;
+                                } else if (counter === 2 && rowObject[i].AIRLINES === "WN"){
+                                    document.write("<br>", "Southwest Airlines:", "<br>");
+                                    counter++;
+                                } else if (counter === 3 && rowObject[i].AIRLINES === "DL"){
+                                    document.write("<br>", "Delta Airlines:", "<br>");
+                                    counter++;
+                                } else if (counter === 4 && rowObject[i].AIRLINES === "AA"){
+                                    document.write("<br>", "American Airlines:", "<br>");
+                                    counter++;
+                                } else if (counter === 5 && rowObject[i].AIRLINES === "UA"){
+                                    document.write("<br>", "United Airlines:", "<br>");
+                                    counter++;
+                                }
+                                document.write(
+                                    "<table>", "<tr>",
+                                    "<td>", rowObject[i].TIME, "</td>", 
+                                    "<td>", rowObject[i].AIRLINES, "</td>", 
+                                    "<td>", rowObject[i].FLIGHTNO, "</td>",
+                                    "<td>", rowObject[i].DESTINATION, "</td>",
+                                    "</tr>", "</table>"
+                                );
+                            }
+                        }
+                    }
+                }else{
+                    counter -= counter;
+                    if(j === 1){
+                        document.write("<br>", "<b>Flight schedule for tomorrow, </b>", daysOfTheWeek[day + j], "<br>");
+                    }
+                    else if(j === 7){
+                        document.write("<br>", "<b>Flight schedule for the next </b>", daysOfTheWeek[day + j], "<br>");
+                    }
+                    else
+                        document.write("<br>", "<b>Flight schedule for </b>", daysOfTheWeek[day + j], "<br>");
+                    for(var i= 0; i< rowObject.length; i++){
+                        if(currentDate > new Date(rowObject[i].ENDDATE)){ //currentDate <= new Date(rowObject[i].ENDDATE) && currentDate >= new Date(rowObject[i].STARTDATE)
+                            if(rowObject[i].FREQUENCY === daysOfTheWeek[day + j] || rowObject[i].FREQUENCY === "DAILY"){
+                                if(counter === 0){ //Hawaiian airlines
+                                    document.write(
+                                    "<br>", "Hawaiian Airlines:", "<br>"
+                                );
+                                    counter++;
+                                } else if (counter === 1 && rowObject[i].AIRLINES === "AS"){
+                                    document.write("<br>", "Alaska Airlines:", "<br>");
+                                    counter++;
+                                } else if (counter === 2 && rowObject[i].AIRLINES === "WN"){
+                                    document.write("<br>", "Southwest Airlines:", "<br>");
+                                    counter++;
+                                } else if (counter === 3 && rowObject[i].AIRLINES === "DL"){
+                                    document.write("<br>", "Delta Airlines:", "<br>");
+                                    counter++;
+                                } else if (counter === 4 && rowObject[i].AIRLINES === "AA"){
+                                    document.write("<br>", "American Airlines:", "<br>");
+                                    counter++;
+                                } else if (counter === 5 && rowObject[i].AIRLINES === "UA"){
+                                    document.write("<br>", "United Airlines:", "<br>");
+                                    counter++;
+                                }
+                                document.write(
+                                    "<table>", "<tr>",
+                                    "<td>", rowObject[i].TIME, "</td>", 
+                                    "<td>", rowObject[i].AIRLINES, "</td>", 
+                                    "<td>", rowObject[i].FLIGHTNO, "</td>",
+                                    "<td>", rowObject[i].DESTINATION, "</td>",
+                                    "</tr>", "</table>"
+                                );
+                            }
+                        }
+                    }
                 }
             }
+              document.getElementById("jsondata").innerHTML = JSON.stringify(rowObject,undefined,4)
+         });
         }
     }
-}
+});
 </script>
-<br>
-<button onClick="window.location.reload();">Refresh Page</button>
-</body>
 </html>
