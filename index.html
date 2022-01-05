@@ -12,7 +12,7 @@
 <body>
     <h1 style="text-align:center">Daily Flight Schedule</h1>
     <div class="conatiner mt-5">
-        <div class="row">
+        <div class="row"> 
             <div class="col-md-3"></div>
             <div class="col-md-3">
                 <input class="form-control" type="file" id="input" accept=".xls,.xlsx"  >
@@ -51,7 +51,7 @@ let data=[{
 function ExcelDateToJSDate(date) {
   return new Date(Math.round((date - 25569)*86400*1000));
 }
-
+//file:///Users/dc/Documents/USDA/Air_Airline_Flights.html
 const daysOfTheWeek = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"];
 const d = new Date();
 let day = d.getDay()
@@ -79,9 +79,10 @@ document.getElementById('button').addEventListener("click", () => {
             document.write("Copy the desired data below and paste the data in Excel. The data will automatically split into different cells.", "<br>");
             document.write("The data below represents the outbound flights from today and up to 1 week in advance.", "<br>");
             document.write("Refresh this page if you would like to go back to the main menu.", "<br>", "<br>")
-            
+            //14 + 4 = 18 days... wednesday 
+            //show per pay period + 4 days
             for(var i = 0; i < rowObject.length; i++){
-                if(currentDate > new Date(rowObject[i].ENDDATE)){ //currentDate <= new Date(rowObject[i].ENDDATE) && currentDate >= new Date(rowObject[i].STARTDATE)
+                if(currentDate <= new Date(rowObject[i].ENDDATE) && currentDate >= new Date(rowObject[i].STARTDATE)){ //currentDate <= new Date(rowObject[i].ENDDATE) && currentDate >= new Date(rowObject[i].STARTDATE)
                     if(rowObject[i].FREQUENCY === daysOfTheWeek[day] || rowObject[i].FREQUENCY === "DAILY"){
                         if(counter === 0){ //Hawaiian airlines
                             document.write(
@@ -90,7 +91,7 @@ document.getElementById('button').addEventListener("click", () => {
                         );
                             counter++;
                         }else if (counter === 1 && rowObject[i].AIRLINES === "AS"){
-                            document.write("<br>", "Alaska Airlines:", "<br>");
+                            document.write("<br>", "Alaska Airlines:", "<br>"); 
                             counter++;
                         }else if (counter === 2 && rowObject[i].AIRLINES === "WN"){
                             document.write("<br>", "Southwest Airlines:", "<br>");
@@ -117,21 +118,15 @@ document.getElementById('button').addEventListener("click", () => {
                     }
                 }
             }
-            while(j < 7){ //for days
+            while(j < 18){
                 j++;
+                var todaysDate = new Date(Date.now() + (j * 86400000)); 
                 //console.log(j, day + j);
                 if(daysOfTheWeek.indexOf(daysOfTheWeek[day + j]) === -1){ //if array is out of bound, subtract 7 to get to the appropriate index and print its element.
                     counter -= counter;
-                    if(j === 1){
-                        document.write("<br>", "<b>Flight schedule for tomorrow, </b>", daysOfTheWeek[(day + j) - 7], "<br>");
-                    }
-                    else if(j === 7){
-                        document.write("<br>", "<b>Flight schedule for the next </b>", daysOfTheWeek[(day + j) - 7], "<br>");
-                    }
-                    else
-                        document.write("<br>", "<b>Flight schedule for </b>", daysOfTheWeek[(day + j) - 7], "<br>");
+                    document.write("<br>", "<b>Flight schedule for, </b>", todaysDate.toDateString(), "<br>");
                     for(var i = 0; i< rowObject.length; i++){
-                        if(currentDate > new Date(rowObject[i].ENDDATE)){//currentDate <= new Date(rowObject[i].ENDDATE) && currentDate >= new Date(rowObject[i].STARTDATE)
+                        if(currentDate <= new Date(rowObject[i].ENDDATE) && currentDate >= new Date(rowObject[i].STARTDATE)){ //currentDate <= new Date(rowObject[i].ENDDATE) && currentDate >= new Date(rowObject[i].STARTDATE)
                             if(rowObject[i].FREQUENCY === daysOfTheWeek[(day + j) - 7] || rowObject[i].FREQUENCY === "DAILY"){
                                 if(counter === 0){ //Hawaiian airlines
                                     document.write(
@@ -167,16 +162,9 @@ document.getElementById('button').addEventListener("click", () => {
                     }
                 }else{
                     counter -= counter;
-                    if(j === 1){
-                        document.write("<br>", "<b>Flight schedule for tomorrow, </b>", daysOfTheWeek[day + j], "<br>");
-                    }
-                    else if(j === 7){
-                        document.write("<br>", "<b>Flight schedule for the next </b>", daysOfTheWeek[day + j], "<br>");
-                    }
-                    else
-                        document.write("<br>", "<b>Flight schedule for </b>", daysOfTheWeek[day + j], "<br>");
+                    document.write("<br>", "<b>Flight schedule for, </b>", todaysDate.toDateString(), "<br>");
                     for(var i= 0; i< rowObject.length; i++){
-                        if(currentDate > new Date(rowObject[i].ENDDATE)){ //currentDate <= new Date(rowObject[i].ENDDATE) && currentDate >= new Date(rowObject[i].STARTDATE)
+                        if(currentDate <= new Date(rowObject[i].ENDDATE) && currentDate >= new Date(rowObject[i].STARTDATE)){ //currentDate <= new Date(rowObject[i].ENDDATE) && currentDate >= new Date(rowObject[i].STARTDATE)
                             if(rowObject[i].FREQUENCY === daysOfTheWeek[day + j] || rowObject[i].FREQUENCY === "DAILY"){
                                 if(counter === 0){ //Hawaiian airlines
                                     document.write(
