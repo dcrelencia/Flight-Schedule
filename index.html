@@ -84,28 +84,6 @@ document.getElementById('button').addEventListener("click", () => {
             for(var i = 0; i < rowObject.length; i++){
                 if(currentDate <= new Date(rowObject[i].ENDDATE) && currentDate >= new Date(rowObject[i].STARTDATE)){ //currentDate <= new Date(rowObject[i].ENDDATE) && currentDate >= new Date(rowObject[i].STARTDATE)
                     if(rowObject[i].FREQUENCY === daysOfTheWeek[day] || rowObject[i].FREQUENCY === "DAILY"){
-                        if(counter === 0){ //Hawaiian airlines
-                            document.write(
-                                "<b>Flight schedule for today, </b>", daysOfTheWeek[day], "<br>",
-                                "<br>", "Hawaiian Airlines:", "<br>"
-                        );
-                            counter++;
-                        }else if (counter === 1 && rowObject[i].AIRLINES === "AS"){
-                            document.write("<br>", "Alaska Airlines:", "<br>"); 
-                            counter++;
-                        }else if (counter === 2 && rowObject[i].AIRLINES === "WN"){
-                            document.write("<br>", "Southwest Airlines:", "<br>");
-                            counter++;
-                        }else if (counter === 3 && rowObject[i].AIRLINES === "DL"){
-                            document.write("<br>", "Delta Airlines:", "<br>");
-                            counter++;
-                        }else if (counter === 4 && rowObject[i].AIRLINES === "AA"){
-                            document.write("<br>", "American Airlines:", "<br>");
-                            counter++;
-                        }else if (counter === 5 && rowObject[i].AIRLINES === "UA"){
-                            document.write("<br>", "United Airlines:", "<br>");
-                            counter++;
-                        }
                         document.write(
                             //https://www.w3schools.com/html/html_tables.asp
                             "<table>", "<tr>",
@@ -128,27 +106,6 @@ document.getElementById('button').addEventListener("click", () => {
                     for(var i = 0; i< rowObject.length; i++){
                         if(currentDate <= new Date(rowObject[i].ENDDATE) && currentDate >= new Date(rowObject[i].STARTDATE)){ //currentDate <= new Date(rowObject[i].ENDDATE) && currentDate >= new Date(rowObject[i].STARTDATE)
                             if(rowObject[i].FREQUENCY === daysOfTheWeek[(day + j) - 7] || rowObject[i].FREQUENCY === "DAILY"){
-                                if(counter === 0){ //Hawaiian airlines
-                                    document.write(
-                                    "<br>", "Hawaiian Airlines:", "<br>"
-                                );
-                                    counter++;
-                                } else if (counter === 1 && rowObject[i].AIRLINES === "AS"){
-                                    document.write("<br>", "Alaska Airlines:", "<br>");
-                                    counter++;
-                                } else if (counter === 2 && rowObject[i].AIRLINES === "WN"){
-                                    document.write("<br>", "Southwest Airlines:", "<br>");
-                                    counter++;
-                                } else if (counter === 3 && rowObject[i].AIRLINES === "DL"){
-                                    document.write("<br>", "Delta Airlines:", "<br>");
-                                    counter++;
-                                } else if (counter === 4 && rowObject[i].AIRLINES === "AA"){
-                                    document.write("<br>", "American Airlines:", "<br>");
-                                    counter++;
-                                } else if (counter === 5 && rowObject[i].AIRLINES === "UA"){
-                                    document.write("<br>", "United Airlines:", "<br>");
-                                    counter++;
-                                }
                                 document.write(
                                     "<table>", "<tr>",
                                     "<td>", rowObject[i].TIME, "</td>", 
@@ -166,27 +123,6 @@ document.getElementById('button').addEventListener("click", () => {
                     for(var i= 0; i< rowObject.length; i++){
                         if(currentDate <= new Date(rowObject[i].ENDDATE) && currentDate >= new Date(rowObject[i].STARTDATE)){ //currentDate <= new Date(rowObject[i].ENDDATE) && currentDate >= new Date(rowObject[i].STARTDATE)
                             if(rowObject[i].FREQUENCY === daysOfTheWeek[day + j] || rowObject[i].FREQUENCY === "DAILY"){
-                                if(counter === 0){ //Hawaiian airlines
-                                    document.write(
-                                    "<br>", "Hawaiian Airlines:", "<br>"
-                                );
-                                    counter++;
-                                } else if (counter === 1 && rowObject[i].AIRLINES === "AS"){
-                                    document.write("<br>", "Alaska Airlines:", "<br>");
-                                    counter++;
-                                } else if (counter === 2 && rowObject[i].AIRLINES === "WN"){
-                                    document.write("<br>", "Southwest Airlines:", "<br>");
-                                    counter++;
-                                } else if (counter === 3 && rowObject[i].AIRLINES === "DL"){
-                                    document.write("<br>", "Delta Airlines:", "<br>");
-                                    counter++;
-                                } else if (counter === 4 && rowObject[i].AIRLINES === "AA"){
-                                    document.write("<br>", "American Airlines:", "<br>");
-                                    counter++;
-                                } else if (counter === 5 && rowObject[i].AIRLINES === "UA"){
-                                    document.write("<br>", "United Airlines:", "<br>");
-                                    counter++;
-                                }
                                 document.write(
                                     "<table>", "<tr>",
                                     "<td>", rowObject[i].TIME, "</td>", 
