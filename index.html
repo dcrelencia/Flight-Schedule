@@ -105,7 +105,7 @@ document.getElementById('button').addEventListener("click", () => {
                     document.write("<br>", "<b>Flight schedule for, </b>", todaysDate.toDateString(), "<br>");
                     for(var i = 0; i< rowObject.length; i++){
                         if(currentDate.getDay + 1 || currentDate.getDay + 2 || currentDate.getDay + 3 || currentDate.getDay + 4 || currentDate.getDay + 5 || currentDate.getDay + 6 || currentDate.getDay + 7 || currentDate <= new Date(rowObject[i].ENDDATE) && currentDate >= new Date(rowObject[i].STARTDATE)){ //currentDate <= new Date(rowObject[i].ENDDATE) && currentDate >= new Date(rowObject[i].STARTDATE)
-                            if(rowObject[i].FREQUENCY === daysOfTheWeek[(day + j) - 7] || rowObject[i].FREQUENCY === "DAILY"){
+                            if(rowObject[i].FLIGHTNO != rowObject[i - 1].FLIGHTNO && rowObject[i].FREQUENCY === daysOfTheWeek[(day + j) - 7] || rowObject[i].FREQUENCY === "DAILY"){
                                 document.write(
                                     "<table>", "<tr>",
                                     "<td>", rowObject[i].TIME, "</td>", 
@@ -122,7 +122,7 @@ document.getElementById('button').addEventListener("click", () => {
                     document.write("<br>", "<b>Flight schedule for, </b>", todaysDate.toDateString(), "<br>");
                     for(var i= 0; i< rowObject.length; i++){
                         if(currentDate.getDay + 1 || currentDate.getDay + 2 || currentDate.getDay + 3 || currentDate.getDay + 4 || currentDate.getDay + 5 || currentDate.getDay + 6 || currentDate.getDay + 7 || currentDate <= new Date(rowObject[i].ENDDATE) && currentDate >= new Date(rowObject[i].STARTDATE)){ //currentDate <= new Date(rowObject[i].ENDDATE) && currentDate >= new Date(rowObject[i].STARTDATE)
-                            if(rowObject[i].FREQUENCY === daysOfTheWeek[day + j] || rowObject[i].FREQUENCY === "DAILY"){
+                            if(rowObject[i].FLIGHTNO != rowObject[i - 1].FLIGHTNO && rowObject[i].FREQUENCY === daysOfTheWeek[day + j] || rowObject[i].FREQUENCY === "DAILY"){
                                 document.write(
                                     "<table>", "<tr>",
                                     "<td>", rowObject[i].TIME, "</td>", 
